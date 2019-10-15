@@ -98,9 +98,15 @@ void processCommand(){
 	}
 }
 extern void idle(void);
+char* allocMystr(){
+	char* mystr = malloc(1024);
+	for(int i =0 ; i < 1024; i++){
+		mystr[i] = i % 128 + 1;
+	}
+	return mystr;
+}
 void kmain(void)
 {
-	
 	overrideKeyboardHandler = 0x0;
 	clearBuff();
 	init_screen();
@@ -110,13 +116,8 @@ void kmain(void)
 	c.fg = Red;
 	setScreenColor(c);
 	clear();
-	//printLogo();
-	while(1){
-	char mystr[2];
-	mystr[0] = getch();
-	mystr[1] = '\0';
+	char* mystr = gets();
 	print(mystr);
-	}
 	
 	idle();
 	

@@ -1,7 +1,7 @@
 #include "memory.h"
 
-#define HEAPSTART (void*)0xFF
-#define HEAPMAX 10000
+#define HEAPSTART (void*)0x10770D
+#define HEAPMAX (void*)0x11770d
 #define MAX_ALLOCS 1024
 
 typedef struct {
@@ -41,7 +41,7 @@ int mem_inuse(size_t addr)
         {
             continue;
         }
-        if (record->start <= addr && record->start + record->size > addr)
+        if ((size_t)record->start <= (size_t)addr && record->start + record->size > (void*)addr)
         {
             return 1;
         }
@@ -51,9 +51,9 @@ int mem_inuse(size_t addr)
 
 void* find_mem_space(size_t size)
 {
-    for (size_t i = HEAPSTART; i < HEAPMAX; i++)
+    for (size_t i = (size_t)HEAPSTART; i < (size_t)HEAPMAX; i++)
     {
-        if (i + size >= HEAPMAX)
+        if (i + size >= (size_t)HEAPMAX)
         {
             return (void*)0;
         }

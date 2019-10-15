@@ -1,5 +1,6 @@
 #include "keyboard.h"
 #include "keymap.h"
+#include "../memory/memory.h"
 #define KEYBOARD_DATA_PORT 0x60
 #define KEYBOARD_STATUS_PORT 0x64
 #define IDT_SIZE 256
@@ -179,7 +180,16 @@ char getch(){
 	}
 	return ascii;
 }
-
+char* gets(){
+  char c;
+  int size = 0;
+  char* str = malloc(1024);
+  while((c = getch()) != '\n'){
+    str[size++] = c;
+  }
+  str[size++] = '\0';
+  return str;
+}
 void keyboard_handler_main(void)
 {
 
