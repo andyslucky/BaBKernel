@@ -3,7 +3,6 @@
 */
 #include "screen/screen.h"
 #include "keyboard/keyboard.h"
-#include "keyboard/keymap.h"
 #include "string/string.h"
 #include "memory/memory.h"
 
@@ -56,20 +55,20 @@ void printHelp(){
 }
 
 void babt(char keycode){
-	if(keycode == 1){
-		print("Exiting BaB text editor!\n\0");
-		overrideKeyboardHandler = 0x0;
-		return;
-	}else if(keycode == BKSP){
-		delch();
-		return;
-	}else if(keycode == ENTER_KEY_CODE) {
-		print("\n\0");
-		return;
-	}else{
-		char ascii = keyboard_map[(unsigned char) keycode];
-		putc(ascii);
-	}
+	// if(keycode == 1){
+	// 	print("Exiting BaB text editor!\n\0");
+	// 	overrideKeyboardHandler = 0x0;
+	// 	return;
+	// }else if(keycode == BKSP){
+	// 	delch();
+	// 	return;
+	// }else if(keycode == ENTER_KEY_CODE) {
+	// 	print("\n\0");
+	// 	return;
+	// }else{
+	// 	char ascii = keyboard_map[(unsigned char) keycode];
+	// 	putc(ascii);
+	// }
 }
 char debug = 0;
 void processCommand(){
@@ -98,55 +97,6 @@ void processCommand(){
 		print("Unknown command was entered! Try --help for options!\n\0");
 	}
 }
-
-char didShift;
-void keyboard_handler_main(void)
-{
-	unsigned char status;
-	char keycode;
-
-	/* write EOI */
-	write_port(0x20, 0x20);
-
-	status = read_port(KEYBOARD_STATUS_PORT);
-	/* Lowest bit of status will be set if buffer is not empty */
-	if (status & 0x01) {
-		keycode = read_port(KEYBOARD_DATA_PORT);
-		if(keycode < 0)
-			return;
-		if(debug){
-			char number[11] = {0,0,0,0,0,0,0,0,0,0,0};
-			itoa(number,keycode);
-			
-			POS curr = getPos();
-			moveTo(24,0);
-			print("Key code is: \0");
-			print(number);
-			moveTo(curr.row,curr.col);
-		}
-		if(overrideKeyboardHandler != 0x0){
-			overrideKeyboardHandler(keycode);
-			return;
-		}
-		char ascii = keyboard_map[(unsigned char) keycode];
-		if(keycode == BKSP){
-			delch();
-			if(buff_pos > 0){
-				buff[buff_pos--] = 0;
-			}
-			return;
-		}else if(keycode == ENTER_KEY_CODE) {
-			print("\n\0");
-			processCommand();
-			clearBuff();
-			return;
-		}
-		if(buff_pos < 255){
-			buff[buff_pos++] = ascii;
-			putc(ascii);
-		}
-	}
-}
 extern void idle(void);
 void kmain(void)
 {
@@ -161,12 +111,13 @@ void kmain(void)
 	setScreenColor(c);
 	clear();
 	//printLogo();
-	char* str = malloc(12);
-	strcpy(str,"Andrew\n\0");
-	char* stuff = malloc(12);
-	strcpy(stuff,"Johnyboi\n\0");
-	print(stuff);
-	print(str);
+	while(1){
+	char mystr[2];
+	mystr[0] = getch();
+	mystr[1] = '\0';
+	print(mystr);
+	}
+	
 	idle();
 	
 }

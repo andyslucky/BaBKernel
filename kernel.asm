@@ -39,7 +39,14 @@ load_idt:
 	lidt [edx]
 	sti 				;turn on interrupts
 	ret
-
+check_heap:
+	mov eax, [esp+4]
+	cmp eax,esp
+	je nomem
+	mov eax,1
+	ret
+	nomem:mov eax,0
+	ret
 keyboard_handler:                 
 	call    keyboard_handler_main
 	iretd
