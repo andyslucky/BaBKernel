@@ -18,7 +18,6 @@ global keyboard_handler
 global read_port
 global write_port
 global load_idt
-global shouldexit;
 extern kmain
 extern print	        ;kmain is defined in the c file
 extern keyboard_handler_main
@@ -46,11 +45,6 @@ keyboard_handler:
 	iretd
 idle:
 loopbegin:hlt
-	push eax
-	mov eax, shouldexit
-	cmp eax,1
-	je  exit
-	pop eax
 	jmp loopbegin
 	exit:ret
 

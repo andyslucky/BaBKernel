@@ -44,3 +44,16 @@ char strcmp(char* str1, char* str2){
 	}
 	return 0;
 }
+void strcpy(char* dst,const char* src)
+{
+	char* current = (char*)src;
+	char* dest = dst;
+	while(1)
+	{
+		*dest++ = *current;
+		if(*current == '\0'){
+			break;
+		}
+		current++;
+	}
+}

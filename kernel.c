@@ -5,6 +5,7 @@
 #include "keyboard/keyboard.h"
 #include "keyboard/keymap.h"
 #include "string/string.h"
+#include "memory/memory.h"
 
 //extern void sleep(short,short);
 #define KEYBOARD_DATA_PORT 0x60
@@ -21,11 +22,12 @@
 
 #define ESC 1
 
+
+
 extern char read_port(unsigned short port);
 extern void write_port(unsigned short port, unsigned char data);
 extern void load_idt(unsigned long *idt_ptr);
-extern unsigned char shouldexit;
-
+COLOR c;
 void printLogo(){
 	//setScreenColor(new);
 	const char* logo = "||==\\           ||==\\\n"\
@@ -86,8 +88,11 @@ void processCommand(){
 	}else if(strcmp(buff,"debug\0") == 0){
 		debug = !debug;
 		return;
-	}else if(strcmp(buff,"quit\0") == 0){
-		shouldexit = 1;
+	}else if(strcmp(buff,"color\0") == 0){
+		c.bg++;
+		c.fg++;
+		setScreenColor(c);
+		clear();
 		return;
 	}else{
 		print("Unknown command was entered! Try --help for options!\n\0");
@@ -145,17 +150,23 @@ void keyboard_handler_main(void)
 extern void idle(void);
 void kmain(void)
 {
+	
 	overrideKeyboardHandler = 0x0;
 	clearBuff();
 	init_screen();
 	idt_init();
 	kb_init();
-	COLOR c;
 	c.bg = Black;
-	c.fg = White;
+	c.fg = Red;
 	setScreenColor(c);
 	clear();
-	printLogo();
+	//printLogo();
+	char* str = malloc(12);
+	strcpy(str,"Andrew\n\0");
+	char* stuff = malloc(12);
+	strcpy(stuff,"Johnyboi\n\0");
+	print(stuff);
+	print(str);
 	idle();
 	
 }
