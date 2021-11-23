@@ -1,21 +1,39 @@
-ASM_SRC = kernel.asm
-LINK_LD = linker.ld
-TARGET = kernel
-ASM_O = kasm.o
+SRC_DIR = src
 OBJS_DIR = objects
-dirs := math keyboard memory screen string
-files := $(foreach dir,$(dirs),$(wildcard $(dir)/*.c))
-objects = $(OBJS_DIR)/kasm.o $(OBJS_DIR)/kernel.o $(OBJS_DIR)/keyboard.o $(OBJS_DIR)/math.o $(OBJS_DIR)/memory.o $(OBJS_DIR)/screen.o $(OBJS_DIR)/string.o
-link:compileC
-	@ld -m elf_i386 -T linker.ld -o $(TARGET) $(objects)
 
-compileC: assemble
-	@gcc -m32 -ffreestanding -c kernel.c $(files)
-	@mv *.o objects/
+BOOTSTRAP_ASM = kernel.asm
+LINKER_SCRIPT = linker.ld
+CPP_KERNEL_MAIN = kernel.cpp
+CFLAGS = -m32 -target i386-pc-none-elf -Wall -ffreestanding -pedantic -nostdlib -nostdinc
+
+TARGET = kernel
+SRC_MODULES = $(foreach dir, $(SRC_DIR)/*,$(wildcard $(dir)/*.cpp))
+
+QEMU_EMULATOR = qemu-system-i386
+QEMU_FLAGS = -kernel
+
+elf:link
+	@objcopy -O elf32-i386 $(TARGET) $(TARGET).elf
+	@rm -rf $(TARGET)
+
+link:compileC
+	@ld -T $(LINKER_SCRIPT) -o $(TARGET) objects/*
 	
 
-assemble:
-	@nasm -f elf32 $(ASM_SRC) -o $(OBJS_DIR)/$(ASM_O)
+compileC: assemble
+	@clang++ $(CFLAGS) -Isrc -c $(SRC_DIR)/$(CPP_KERNEL_MAIN) $(SRC_MODULES)
+	@mv *.o $(OBJS_DIR)/
+
+assemble: $(OBJS_DIR)
+	@nasm -f elf32 $(SRC_DIR)/$(BOOTSTRAP_ASM) -o $(OBJS_DIR)/$(TARGET)_asm.o
+
+$(OBJS_DIR):
+	@mkdir $(OBJS_DIR)
+
 clean:
-	rm -rf $(OBJS_DIR)/*
-	rm -rf $(TARGET)
+	@rm -rf $(OBJS_DIR)
+	@rm -rf $(TARGET)
+	@rm -rf $(TARGET).elf
+
+run:
+	@$(QEMU_EMULATOR) $(QEMU_FLAGS) $(TARGET).elf
