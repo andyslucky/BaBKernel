@@ -1,10 +1,11 @@
 #pragma once
 
 #define FRAME_BUFFER_START 0xb8000
-#define CHARS_PER_LINE 160
+
 #define NUM_LINES 25
-#define BYTE_PER_CHAR 2
-#define COLUMNS 80
+#define BYTE_PER_SCREEN_CHAR 2
+#define SCREEN_CHARS_PER_LINE 80
+#define BYTES_PER_LINE SCREEN_CHARS_PER_LINE * BYTE_PER_SCREEN_CHAR
 #define VIDEO_MAP_SIZE 4000
 
 #define MAX_SCREEN_CHARS 2000
@@ -43,16 +44,11 @@ typedef struct _point{
 	unsigned int col;
 } Point;
 
-class ScreenBufferChar {
-	private:
-		char character_value;
-		char encoded_color;
-	public:
-		ScreenBufferChar(char value, ColorPair color_pair);
-		ColorPair get_char_color_pair();
-		Color get_char_bg();
-		Color get_char_fg();
-};
+typedef struct __attribute__((packed)) 
+{
+	char character_value;
+	char encoded_color;
+} ScreenBufferChar;
 
 class ScreenBuffer {
 	private:
@@ -73,7 +69,7 @@ class ScreenBuffer {
 		void clear();
 
 		/// Sets the character value 
-		void set_char_at_pos(char c, int col, int row);
+		void set_char_at_pos(char c, int row, int col);
 
-		void set_char_at_pos(ScreenBufferChar c, int col, int row);
+		void set_char_at_pos(ScreenBufferChar c, int row, int col);
 };

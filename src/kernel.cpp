@@ -15,7 +15,9 @@ void kmain(void)
 	idt_init();
 	kb_init();
 	screen_handle.set_color(ColorPair{Color::Black,Color::Red});
-	screen_handle.set_char_at_pos('A',0,0);
+	screen_handle.set_char_at_pos('H',0,0);
+	screen_handle.set_char_at_pos('E',0,1);
+	screen_handle.set_char_at_pos('Y',0,2);
 	idle();
 }
 

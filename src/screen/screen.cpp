@@ -2,14 +2,16 @@
 
 
 #ifdef __cplusplus
-extern "C" 
+extern "C" {
 #endif
+
 char read_port(unsigned short port);
 
-#ifdef __cplusplus
-extern "C" 
-#endif
 void write_port(unsigned short port, unsigned char data);
+
+#ifdef __cplusplus
+}
+#endif
 
 
 char encodeColor(ColorPair c){
@@ -25,9 +27,13 @@ ColorPair decodeColor(char encodedByte){
 	return c;
 }
 
-// SCREEN screen;
+static unsigned short constexpr get_frame_buffer_offset(int row, int col) {
+	return row*BYTES_PER_LINE + col*sizeof(ScreenBufferChar);
+
+}
 static void _move_cursor_to_pos(Point p){
-	unsigned short pos = p.row * COLUMNS + p.col;
+	// unsigned short pos = get_frame_buffer_offset(p.row, p.col);
+	unsigned short pos = p.row * SCREEN_CHARS_PER_LINE + p.col;
 	write_port(FB_CMD_PORT,FB_HIGHBYTE);
 	write_port(FB_DATA_PORT,((pos >> 8) & 0x00FF));
 	write_port(FB_CMD_PORT,FB_LOWBYTE);
@@ -35,8 +41,8 @@ static void _move_cursor_to_pos(Point p){
 }
 
 void ScreenBuffer::move_cursor(int row, int col){
-	if(row < NUM_LINES && col < COLUMNS){
-		this->char_at_cursor = (ScreenBufferChar*)(FRAME_BUFFER_START + (row*COLUMNS + col));
+	if(row < NUM_LINES && col < SCREEN_CHARS_PER_LINE){
+		this->char_at_cursor = (ScreenBufferChar*)(FRAME_BUFFER_START + get_frame_buffer_offset(row,col));
 		this->cursor_pos.row = row;
 		this->cursor_pos.col = col;
 		_move_cursor_to_pos(this->cursor_pos);
@@ -60,12 +66,12 @@ Point ScreenBuffer::get_cusror_pos(){
 	return this->cursor_pos;
 }
 
-void ScreenBuffer::set_char_at_pos(char c, int col, int row) {
+void ScreenBuffer::set_char_at_pos(char c, int row,  int col) {
 	this->move_cursor(row,col);
-	*(this->char_at_cursor) = ScreenBufferChar(c, this->current_color);
+	*(this->char_at_cursor) = ScreenBufferChar{c, encodeColor(this->current_color)};
 }
 
-void ScreenBuffer::set_char_at_pos(ScreenBufferChar c, int col, int row) {
+void ScreenBuffer::set_char_at_pos(ScreenBufferChar c, int row, int col) {
 	this->move_cursor(row,col);
 	*(this->char_at_cursor) = c;
 }
@@ -73,14 +79,8 @@ void ScreenBuffer::set_char_at_pos(ScreenBufferChar c, int col, int row) {
 void ScreenBuffer::clear(){
 	this->char_at_cursor = (ScreenBufferChar*)FRAME_BUFFER_START;
 	int offset = 0;
-	for(offset = 0; offset < COLUMNS * NUM_LINES; offset++){
-		this->char_at_cursor[offset] = ScreenBufferChar(' ',this->current_color);
+	for(offset = 0; offset < SCREEN_CHARS_PER_LINE * NUM_LINES; offset++){
+		this->char_at_cursor[offset] = ScreenBufferChar{' ', encodeColor(this->current_color)};
 	}
-	//screen.current_ch = screen.bp;
 	this->move_cursor(0,0);
-}
-
-ScreenBufferChar::ScreenBufferChar(char value, ColorPair color_pair){
-	this->character_value = value;
-	this->encoded_color = encodeColor(color_pair);
 }
