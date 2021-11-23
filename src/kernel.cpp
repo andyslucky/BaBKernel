@@ -1,8 +1,9 @@
 /*
 *  kernel.c
 */
-#include "screen/screen.h"
-#include "keyboard/keyboard.h"
+#include <screen/screen.h>
+#include <keyboard/keyboard.h>
+#include <idt/idt.h>
 
 #ifdef __cplusplus
 extern "C" {
