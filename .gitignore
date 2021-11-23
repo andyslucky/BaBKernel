@@ -1,0 +1,4 @@
+.vscode
+objects/
+kernel.elf
+kernel
