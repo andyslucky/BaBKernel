@@ -19,6 +19,7 @@ void kmain(void)
 	screen_handle.set_char_at_pos('H',0,0);
 	screen_handle.set_char_at_pos('E',0,1);
 	screen_handle.set_char_at_pos('Y',0,2);
+	screen_handle.move_cursor(1,0);
 	idle();
 }
 

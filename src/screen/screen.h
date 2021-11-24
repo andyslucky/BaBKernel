@@ -44,11 +44,20 @@ typedef struct _point{
 	unsigned int col;
 } Point;
 
-typedef struct __attribute__((packed)) 
-{
-	char character_value;
-	char encoded_color;
-} ScreenBufferChar;
+#pragma pack(1)
+class ScreenBufferChar {
+	private:
+		char character_value;
+		char encoded_color;
+	public:
+		ScreenBufferChar(char value, ColorPair color_pair);
+		ColorPair get_color_pair();
+		void set_color_pair(ColorPair color_pair);
+		Color get_bg();
+		Color get_fg();
+		char get_value();
+		void set_value(char c);
+} ;
 
 class ScreenBuffer {
 	private:
@@ -71,5 +80,4 @@ class ScreenBuffer {
 		/// Sets the character value 
 		void set_char_at_pos(char c, int row, int col);
 
-		void set_char_at_pos(ScreenBufferChar c, int row, int col);
 };

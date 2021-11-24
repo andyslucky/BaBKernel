@@ -3,9 +3,16 @@
 struct IDT_entry IDT[IDT_SIZE];
 
 #ifdef __cplusplus
-extern "C" 
+extern "C" {
 #endif
+
+void load_idt(unsigned long *idt_ptr);
+
 void keyboard_handler(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 void idt_init(void)
 {

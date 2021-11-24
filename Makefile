@@ -11,7 +11,7 @@ LINKER_SCRIPT = linker.ld
 
 ASSEMBLER_FLAGS = -f elf32
 CPP_KERNEL_MAIN = kernel.cpp
-CFLAGS = -m32 -target i386-pc-none-elf -Wall -ffreestanding -pedantic -nostdlib -nostdinc
+CFLAGS = -m32 -target i386-pc-none-elf -Wall -ffreestanding -pedantic -nostdlib -nostdinc -Wno-pragma-pack
 
 TARGET = kernel
 SRC_MODULES = $(foreach dir, $(SRC_DIR)/*,$(wildcard $(dir)/*.cpp))
