@@ -1,6 +1,6 @@
 #pragma once
 
-#define FRAME_BUFFER_START 0xb8000
+#define TEXT_MODE_FRAME_BUFFER_START 0xb8000
 
 #define NUM_LINES 25
 #define BYTE_PER_SCREEN_CHAR 2
@@ -15,7 +15,7 @@
 #define FB_DATA_PORT 0x3D5
 #define FB_HIGHBYTE 14
 #define FB_LOWBYTE 15
-enum class Color {
+enum class TextModeColor {
 	Black = 0,
 	Blue = 1,
 	Green = 2,
@@ -35,9 +35,9 @@ enum class Color {
 };
 
 typedef struct _ColorPair{
-	enum Color bg;
-	enum Color fg;
-} ColorPair;
+	enum TextModeColor bg;
+	enum TextModeColor fg;
+} TextModeColorPair;
 
 typedef struct _point{
 	unsigned int row;
@@ -45,35 +45,35 @@ typedef struct _point{
 } Point;
 
 #pragma pack(1)
-class ScreenBufferChar {
+class TextModeBufferChar {
 	private:
 		char character_value;
 		char encoded_color;
 	public:
-		ScreenBufferChar(char value, ColorPair color_pair);
-		ColorPair get_color_pair();
-		void set_color_pair(ColorPair color_pair);
-		Color get_bg();
-		Color get_fg();
+		TextModeBufferChar(char value, TextModeColorPair color_pair);
+		TextModeColorPair get_color_pair();
+		void set_color_pair(TextModeColorPair color_pair);
+		TextModeColor get_bg();
+		TextModeColor get_fg();
 		char get_value();
 		void set_value(char c);
 } ;
 
-class ScreenBuffer {
+class TextModeBuffer {
 	private:
 		Point cursor_pos;
-		ColorPair current_color;
-		ScreenBufferChar* char_at_cursor;
+		TextModeColorPair current_color;
+		TextModeBufferChar* char_at_cursor;
 	public:
-		ScreenBuffer();
+		TextModeBuffer();
 
-		void set_color(ColorPair c);
+		void set_color(TextModeColorPair c);
 
 		Point get_cusror_pos();
 
 		void move_cursor(int row, int col);
 
-  		ColorPair get_color();
+  		TextModeColorPair get_color();
 
 		void clear();
 
